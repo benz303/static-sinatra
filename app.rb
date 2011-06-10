@@ -1,43 +1,37 @@
 # rubygems required
 require 'rubygems'
-require 'sinatra'
 require 'compass'
+require 'sinatra'
 require 'haml'
 
+APP_ROOT = File.dirname(__FILE__)
+
 # general purpose helpers
-require 'helpers/utilities'
-helpers Sinatra::Utilities
+#require APP_ROOT + '/helpers/utilities'
+#helpers Sinatra::Utilities
 
 # application specific helpers
-require 'helpers/navigation'
-helpers Sinatra::Navigation
-require 'helpers/custom'
-helpers Sinatra::Custom
+#require APP_ROOT + '/helpers/navigation'
+#helpers Sinatra::Navigation
+#require APP_ROOT + '/helpers/custom'
+#helpers Sinatra::Custom
 
 # ensure that every rack request creates a new css file
-require 'sass/plugin/rack'
-use Sass::Plugin::Rack
-Sass::Plugin.options[:css_location] = "public/stylesheets"
-Sass::Plugin.options[:template_location] = "views/sass"
+#require 'sass/plugin/rack'
+#use Sass::Plugin::Rack
+#Sass::Plugin.options[:css_location] = "public/stylesheets"
+#Sass::Plugin.options[:template_location] = "views/sass"
 
 # set sinatra's variables
 set :app_file, __FILE__
 set :root, File.dirname(__FILE__)
-APP_ROOT = File.dirname(__FILE__)
 set :views, "views"
 set :public, "public"
 
 # compass (Sass toolkit) config
 configure do
-  Compass.configuration do |config|
-    config.project_path = File.dirname(__FILE__)
-    config.sass_dir = 'stylesheets'
-    config.images_dir = './images'
-    config.http_path = "/"
-    config.http_images_path = "../images"
-    config.http_stylesheets_path = "./stylesheets"
-  end
-  set :sass, Compass.sass_engine_options
+  Compass.add_project_configuration(File.join(Sinatra::Application.root, 'config', 'compass.rb'))
+  set :haml, { :format => :html5 }
 end
 
 # routes
@@ -47,15 +41,14 @@ get '/stylesheets/:name' do
   sass(:"sass/#{params[:name]}", Compass.sass_engine_options )
 end
 
-get "/index.html" do
-  haml :"pages/index", {
-    :layout => :"layouts/docs"
-  }
-end
-
-get "/README.html" do
-  haml :"README", {
-    :layout => :"layouts/docs"
+get '/*' do
+  if params[:splat] == ['']
+    params[:splat] = 'index.html'
+  else
+    params[:splat] = params[:splat][0]
+  end
+  haml :"pages/#{params[:splat]}", {
+    :layout => :'layouts/application'
   }
 end
 

@@ -1,31 +1,45 @@
-!!! Strict
-%html{:lang => "en", "xml:lang" => "en", :xmlns => "http://www.w3.org/1999/xhtml"}
+!!! 5
+%html
   %head
-    %meta{:content => "text/html; charset=utf-8", "http-equiv" => "content-type"}
-    %title
-      =theme_token
-      | projectName
-    %link{:href => rel_path+"stylesheets/core.css", :media => "screen", :rel => "stylesheet", :type => "text/css"}/
-    /[if IE 7]
-      %link{:href => rel_path+"stylesheets/ie/7.css", :media => "screen", :rel => "stylesheet", :type => "text/css"}/
-    /[if IE 6]
-      %link{:href => rel_path+"stylesheets/ie/6.css", :media => "screen", :rel => "stylesheet", :type => "text/css"}/
-    %script{:src => rel_path+"javascripts/application.js", :type => "text/javascript"}
-
-
+    %meta(http-equiv="content-type" content="text/html; charset=UTF-8")
+    %title 帮助中心 - 云渠道
+    %link(href="stylesheets/help.css" rel="stylesheet")
   %body
-
-    #page
-      #wrapper
-        #header
-          %h1
-            %a.hidden-link{:href => rel_path+"index.html"}
-              static-sinatra demo
-          %h2
-            %a.hidden-link{:href => rel_path+theme_token+"/index.html"}
-              =theme_token.capitalize
-        #body-wrapper
-          = partial :'partials/nav', :locals => { :theme_token => theme_token, :is_tertiary => defined?(is_tertiary) ? true : false, :is_home => defined?(is_home) ? true : false, :is_sec => defined?(is_sec) ? true : false }
-          = yield
-          .cl
-    = partial :'partials/footer'
+    #header
+      %a(href="/")
+        %img(src="http://www.yunqudao.com/img/logo.png")
+      %h1
+        云渠道 帮助中心
+        %a(href="http://www.yunqudao.com" target="_blank") 返回官网
+    #sidebar
+      %ul
+        %li
+          %a.bold(href="/") 帮助中心
+        %li
+          %a.bold(href="/") 新手入门
+          %ul
+            %li
+              %a(href="/") 基础知识
+            %li
+              %a(href="/") 账户启用
+        %li
+          %a.bold(href="/") 操作指南
+          %ul
+            %li
+              %a(href="/") 产品管理
+            %li
+              %a(href="/") eBay管理
+            %li
+              %a(href="/") 图片管理
+            %li
+              %a(href="/") 账户管理
+        %li
+          %a.bold(href="/") 常见问题
+        %li
+          在线客服
+          .chat
+            %a.qq(href="http://wpa.qq.com/msgrd?v=3&amp;uin=1852114360&amp;site=qq&amp;menu=yes" target="_blank") QQ
+            %a.msn(href="http://settings.messenger.live.com/Conversation/IMMe.aspx?invitee=8228429d11813bf8@apps.messenger.live.com&amp;mkt=zh-CN" target="_blank") MSN
+            %a.sina(target="_blank" href="http://weibo.com/2001863351") 新浪微博
+    #index= yield
+    #footer Copyright &copy; 2010-2011 上海云脉网络信息技术有限公司 版权所有 All Rights Reserved

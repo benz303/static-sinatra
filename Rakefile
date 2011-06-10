@@ -1,45 +1,24 @@
 desc "save static html to 'static' directory..."
 task :build do
-
   require 'rake'
-  require 'sinatra'
-  require 'app'
-
+#  require 'sinatra'
+  require File.dirname(__FILE__) << '/app'
   @request = Rack::MockRequest.new(Sinatra::Application)
-  haml_view_paths = Dir.glob('views/pages/**/*.haml').map {|path| path[0..-6].sort_by {|view| view.length } }
-
-  def create_dirs static_view_path
-
-    dir = File.dirname(static_view_path)
-
-    unless File.directory?(dir)
-      puts "making dir : "+dir
-      FileUtils.mkdir_p(dir)
-    end
-
+  system 'rm static/*;rm -r static/*'
+  system 'cp public/* static'
+  
+  Dir.glob('views/pages/*.haml').each do |path|
+    url = path.match(/([^\/]+)\.html\.haml/)[1]
+    p "creating #{url}.html"
+    File.open("static/#{url}.html", 'w'){|f| f.print @request.get(url+'.html').body }
   end
-
-  def create_files rack_url, static_view
-
-    if rack_url.include? "index"
-      index_url = rack_url.sub('index','')
-      puts "creating "+static_view +".html"
-      File.open(static_view+".html", 'w'){|f| f.print @request.get(index_url+'index.html').body}
-    else
-      puts "creating "+static_view +".html"
-      File.open(static_view+".html", 'w'){|f| f.print @request.get(rack_url+'.html').body}
-    end
+  
+  system 'mkdir static/stylesheets' unless File.exists?('static/stylesheets')
+  Dir.glob('views/sass/*.sass').each do |path|
+    url = path.match(/([^\/]+)\.css\.sass/)[1]
+    p "creating #{url}.css"
+    File.open("static/stylesheets/#{url}.css", 'w'){|f| f.print @request.get("stylesheets/#{url}.css").body }
   end
-
-  haml_view_paths.each do |haml_path|
-
-    static_view_path = haml_path.to_s.sub(/views\/pages/,'static')
-    rack_url = haml_path[0].sub(/views\/pages/,'')
-    create_dirs(static_view_path)
-    create_files(rack_url, static_view_path)
-
-  end
-
 end
 
 desc "export the standalone version to a 'site' directory above the root"
